@@ -12,7 +12,7 @@ router.get(
 
 router.get(
     "/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login" }),
+    passport.authenticate("google", {successRedirect:"localhost:5173/", failureRedirect: "/login" }),
     (req, res) => {
         req.session.save(() => {
             res.json({ message: "Authentication successful", user: req.user });

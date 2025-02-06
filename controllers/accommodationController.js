@@ -11,7 +11,8 @@ export const registerAccommodation = async (req, res, next) => {
       daysOfStay,
       utr,
     } = req.body;
-
+    console.log(req.body)
+    console.log(req.user)
     const existingUTR = await User.findOne({ "events.utr": utr });
     if (existingUTR) {
       throw new Error(`UTR number ${utr} is already used.`);
@@ -19,8 +20,12 @@ export const registerAccommodation = async (req, res, next) => {
 
     const paymentScreenshot = req.file ? req.file.path : req.body.paymentScreenshot;
 
+    const stayDuration = Number(daysOfStay);
+    if (isNaN(stayDuration) || stayDuration <= 0) {
+      return res.status(400).json({ message: "Invalid daysOfStay value." });
+    }
     const accommodationRegistration = {
-      daysOfStay,
+      daysOfStay: stayDuration,
       paymentScreenshot,
       utr,
     };
