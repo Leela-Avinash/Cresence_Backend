@@ -1,5 +1,7 @@
 // controllers/eventController.js
 import User from "../models/User.js";
+import fs from "fs";
+import path from "path";
 
 // Helper function to update a user’s event registration
 const updateUserEventRegistration = async (
@@ -46,6 +48,73 @@ const updateUserEventRegistration = async (
     await user.save();
 };
 
+// Helper function to safely escape CSV fields
+const csvEscape = (value) => {
+    if (value === null || value === undefined) return "";
+    const str = String(value);
+    // Replace any existing double quotes with two double quotes then wrap the field in quotes.
+    return `"${str.replace(/"/g, '""')}"`;
+};
+
+// New helper to update (or create) the CSV for the event registration
+const updateEventCSV = async (data) => {
+    // Define the directory and filename. Adjust the folder path as needed.
+    const csvDir = path.join(process.cwd(), "csv");
+    if (!fs.existsSync(csvDir)) {
+        fs.mkdirSync(csvDir);
+    }
+    // Use eventName as the file name (for example: "Hackathon.csv")
+    const fileName = `${data.eventName}.csv`;
+    const filePath = path.join(csvDir, fileName);
+
+    // Define the header (only written if file is not found)
+    const header =
+        [
+            "Name",
+            "Email",
+            "Team Name",
+            "Teammates",
+            "College",
+            "Branch",
+            "Year Of Study",
+            "Phone",
+            "UTR",
+            "Payment Screenshot",
+        ]
+            .map(csvEscape)
+            .join(",") + "\n";
+
+    const teammatesStr =
+        data.isTeam && data.teammates && data.teammates.length > 0
+            ? data.teammates
+                  .map((mate) => `${mate.name} <${mate.email}>`)
+                  .join(" | ")
+            : "";
+
+    const row =
+        [
+            data.userName,
+            data.email,
+            data.isTeam ? data.teamName || "" : "",
+            data.isTeam ? teammatesStr : "",
+            data.collegeName,
+            data.branch,
+            data.yearOfStudy,
+            data.phone,
+            data.utr,
+            data.paymentScreenshot,
+        ]
+            .map(csvEscape)
+            .join(",") + "\n";
+
+    // If the file does not exist, create it with header then append the row.
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, header, "utf8");
+    }
+    // Append the new row
+    fs.appendFileSync(filePath, row, "utf8");
+};
+
 export const registerEvent = async (req, res, next) => {
     try {
         const {
@@ -59,6 +128,8 @@ export const registerEvent = async (req, res, next) => {
             name,
             email,
             teammates,
+            phone,
+            branch,
         } = req.body;
         console.log(req.body);
         console.log(req.user);
@@ -82,6 +153,8 @@ export const registerEvent = async (req, res, next) => {
                 teammates: isTeam ? teammates || [] : [],
                 paymentScreenshot,
                 utr,
+                phone,
+                branch,
             },
             true
         );
@@ -107,6 +180,22 @@ export const registerEvent = async (req, res, next) => {
                 );
             }
         }
+
+        // Update CSV only for the main user registration.
+        await updateEventCSV({
+            userName: name,
+            email: email,
+            isTeam: isTeam || false,
+            teamName: teamName,
+            teammates: teammates,
+            collegeName: collegeName,
+            branch: branch,
+            yearOfStudy: yearOfStudy,
+            phone: phone,
+            utr: utr,
+            paymentScreenshot: paymentScreenshot,
+            eventName: eventName,
+        });
 
         res.status(200).json({ message: "Event registered successfully" });
     } catch (error) {

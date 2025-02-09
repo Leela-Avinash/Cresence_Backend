@@ -16,7 +16,7 @@ const EventRegistrationSchema = new mongoose.Schema({
     isTeam: { type: Boolean, default: false },
     teamName: { type: String },
     teammates: [TeammateSchema],
-    paymentScreenshot: { type: String }, // URL or file path
+    paymentScreenshot: { type: String }, 
     utr: { type: String, unique: true, sparse: true },
 });
 
@@ -38,6 +38,8 @@ const UserSchema = new mongoose.Schema({
     profilePic: { type: String },
     collegeName: { type: String },
     yearOfStudy: { type: String },
+    phone: {type: String},
+    branch: {type: String},
     events: [EventRegistrationSchema],
     workshops: [WorkshopRegistrationSchema],
     accommodations: [AccommodationRegistrationSchema],
