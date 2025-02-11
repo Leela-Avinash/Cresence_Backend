@@ -24,7 +24,6 @@ connectDB();
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-import cors from "cors";
 
 app.use(
     cors({
