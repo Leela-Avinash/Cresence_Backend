@@ -1,6 +1,6 @@
 // routes/workshopRoutes.js
 import express from "express";
-import { registerWorkshop } from "../controllers/workshopController.js";
+import { registerWorkshop } from "../controllers/workShopController.js";
 import upload from "../middleware/fileUpload.js";
 
 const router = express.Router();
