@@ -31,6 +31,8 @@ app.use(cors({
 }));
 
 // Express session middleware (required for Passport)
+app.set("trust proxy", 1);
+
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "secret",
@@ -41,8 +43,8 @@ app.use(
             collectionName: "sessions",
           }),
         cookie: { 
-            secure: false, 
-            httpOnly: false,
+            secure: true, 
+            httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: "lax",
         },
