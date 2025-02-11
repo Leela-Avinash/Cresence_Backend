@@ -7,7 +7,7 @@ import connectDB from "./config/db.js";
 import "./config/passport.js"; 
 
 import eventRoutes from "./routes/eventRoutes.js";
-import workshopRoutes from "./routes/workshopRoutes.js";
+import workshopRoutes from "./routes/workShopRoutes.js";
 import accommodationRoutes from "./routes/accommodationRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import coordinatorRoutes from "./routes/coordinatorRoutes.js";
