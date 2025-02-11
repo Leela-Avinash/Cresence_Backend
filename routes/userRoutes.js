@@ -10,7 +10,7 @@ router.get(
     passport.authenticate("google", { failureRedirect: "/login", keepSessionInfo: true }),
     (req, res) => {
         console.log(req.session.redirectUrl)
-        const redirectUrl = req.session.redirectUrl || "http://localhost:5173/";
+        const redirectUrl = req.session.redirectUrl || "https://cresence.vercel.app";
         console.log(redirectUrl)
         delete req.session.redirectUrl; 
         req.session.save(() => {
