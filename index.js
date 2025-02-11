@@ -25,7 +25,7 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: "http://localhost:5173", 
+    origin: "http://cresence.vercel.app", 
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
