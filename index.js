@@ -4,7 +4,7 @@ import path from "path";
 import session from "express-session";
 import passport from "passport";
 import connectDB from "./config/db.js";
-import "./config/passport.js"; 
+import "./config/passport.js";
 
 import eventRoutes from "./routes/eventRoutes.js";
 import workshopRoutes from "./routes/workShopRoutes.js";
@@ -13,8 +13,8 @@ import userRoutes from "./routes/userRoutes.js";
 import coordinatorRoutes from "./routes/coordinatorRoutes.js";
 
 import errorHandler from "./middleware/errorHandler.js";
-import cors from 'cors';
-import MongoStore from "connect-mongo"
+import cors from "cors";
+import MongoStore from "connect-mongo";
 
 const app = express();
 
@@ -24,11 +24,17 @@ connectDB();
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-    origin: "https://cresence.vercel.app", 
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-}));
+import cors from "cors";
+
+app.use(
+    cors({
+        origin: "https://cresence.vercel.app", // ✅ Allow frontend domain
+        credentials: true, // ✅ Allow sending cookies
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // ✅ Ensure all needed methods are allowed
+        allowedHeaders: ["Content-Type", "Authorization"], // ✅ Ensure headers are explicitly allowed
+        exposedHeaders: ["set-cookie"], // ✅ Allows frontend to see cookies in response headers
+    })
+);
 
 // Express session middleware (required for Passport)
 app.set("trust proxy", 1);
@@ -39,11 +45,11 @@ app.use(
         resave: false,
         saveUninitialized: false,
         store: MongoStore.create({
-            mongoUrl: process.env.MONGO_URI, 
+            mongoUrl: process.env.MONGO_URI,
             collectionName: "sessions",
-          }),
-        cookie: { 
-            secure: true, 
+        }),
+        cookie: {
+            secure: true,
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: "none",
@@ -63,7 +69,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/workshops", workshopRoutes);
 app.use("/api/accommodations", accommodationRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/coordinator", coordinatorRoutes); 
+app.use("/api/coordinator", coordinatorRoutes);
 
 // Global error handler middleware
 app.use(errorHandler);
